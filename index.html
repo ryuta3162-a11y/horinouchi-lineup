@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FIT365 京王堀之内 - マシンラインナップ</title>
+    
+    <!-- Google Fonts: Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     
     <script>
         tailwind.config = {
@@ -17,8 +25,7 @@
                         fitgray: '#f4f4f5',
                     },
                     fontFamily: {
-                        // 力強いフォントファミリーの設定
-                        sans: ['"Helvetica Neue"', 'Arial', '"Hiragino Kaku Gothic ProN"', '"Hiragino Sans"', 'Meiryo', 'sans-serif'],
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
                     }
                 }
             }
@@ -26,56 +33,31 @@
     </script>
     <style>
         /* スムーススクロールとベース背景 */
-        html { scroll-behavior: smooth; background-color: #f8f8f8; }
+        html { scroll-behavior: smooth; background-color: #f0f0f5; }
 
         /* スクロールバー非表示 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* --- メニューボタン（台形/平行四辺形）のスタイリング --- */
-        .menu-btn-box {
-            transform: skewX(-12deg);
-            margin: 0 8px; /* skewによるはみ出し防止 */
-        }
-        .menu-btn-text, .menu-btn-icon {
-            transform: skewX(12deg); /* 中身の文字はまっすぐに戻す */
-        }
-        
-        /* アクティブ時のスタイル */
-        .menu-btn.active .menu-btn-box {
-            background-color: #f05b82;
-            border-color: #f05b82;
-            box-shadow: 6px 6px 0px rgba(17, 17, 17, 0.1); /* 黒のソリッドな影 */
-        }
-        .menu-btn.active .menu-btn-text {
-            color: #ffffff;
-        }
-        .menu-btn.active .menu-btn-icon {
-            color: #ffffff;
-            transform: skewX(12deg) translateX(4px);
-        }
-
-        /* --- Heroセクションのアニメーション --- */
+        /* --- アニメーション --- */
         @keyframes strokeDash {
-            0% { -webkit-text-stroke: 1px transparent; color: transparent; transform: translateY(30px); opacity: 0;}
-            30% { -webkit-text-stroke: 1px rgba(255,255,255,0.8); color: transparent; transform: translateY(0); opacity: 1;}
-            100% { -webkit-text-stroke: 0px transparent; color: #fff; }
+            0% { -webkit-text-stroke: 1px transparent; color: transparent; transform: translateZ(0) translateY(20px); opacity: 0;}
+            30% { -webkit-text-stroke: 2px rgba(255,255,255,0.8); color: transparent; transform: translateZ(50px) translateY(0); opacity: 1;}
+            100% { -webkit-text-stroke: 0px transparent; color: #fff; transform: translateZ(0);}
         }
         .animate-hero-text {
-            animation: strokeDash 1.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+            animation: strokeDash 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
         }
         
-        @keyframes slideUpFade {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
+        @keyframes popUpFade {
+            0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
-        .animate-slide-up {
+        .animate-pop-up {
             opacity: 0;
-            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: popUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .delay-1 { animation-delay: 0.6s; }
 
-        /* --- グリッドカードの演出 --- */
         .machine-card {
             opacity: 0;
             transform: translateY(30px);
@@ -85,89 +67,95 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* --- ダイナミックフローティングエフェクト --- */
+        .dynamic-hover {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+        }
+        .dynamic-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            z-index: 30;
+        }
         
-        /* 画像の背景なじませ＆ズーム */
+        /* 画像の馴染ませ */
         .img-blend {
-            mix-blend-mode: darken; /* 白背景の画像をグレー背景に自然に馴染ませる */
-        }
-        
-        /* 平行四辺形のスピードバッジ */
-        .slant-badge {
-            transform: skewX(-15deg);
-        }
-        .slant-badge-inner {
-            display: inline-block;
-            transform: skewX(15deg);
+            mix-blend-mode: multiply; /* 背景色により深く馴染む */
         }
     </style>
 </head>
-<body class="text-gray-900 flex flex-col min-h-screen">
+<body class="text-gray-900 bg-[#f0f0f5] flex min-h-screen overflow-x-hidden">
 
-    <!-- ヘッダー -->
-    <header class="fixed w-full top-0 z-50 bg-white/95 backdrop-blur-md shadow-[0_1px_0_rgba(0,0,0,0.05)] transition-all">
-        <div class="h-1 bg-fitpink w-full"></div>
-        <div class="max-w-7xl mx-auto px-4 py-3 md:py-4 flex items-center gap-3">
-            <div class="w-8 h-8 md:w-10 md:h-10 bg-fitpink text-white flex items-center justify-center font-black text-lg md:text-xl transform -skew-x-6">F</div>
-            <h1 class="font-black text-xl md:text-2xl tracking-[0.1em] text-fitdark uppercase">FIT365</h1>
-        </div>
-    </header>
+    <!-- メニューを開くボタン (サイドバーが閉じた時に表示) -->
+    <button id="open-sidebar-btn" class="fixed top-4 left-4 z-[60] bg-fitdark text-white p-3 rounded-xl shadow-lg hover:bg-fitpink transition-colors duration-300 hidden group">
+        <i data-lucide="menu" class="w-6 h-6 transform group-hover:scale-110 transition-transform"></i>
+    </button>
 
-    <!-- ファーストビュー (見やすさとアニメーション特化) -->
-    <div class="relative w-full min-h-[60vh] md:min-h-[70vh] bg-fitdark flex flex-col items-center justify-center pt-20 px-4 border-b-[12px] border-fitpink">
+    <!-- 左側：開閉可能なサイドメニュー -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-[70] overflow-y-auto no-scrollbar shadow-[10px_0_30px_rgba(0,0,0,0.05)] flex flex-col transition-transform duration-500 ease-in-out">
+        <!-- 閉じるボタン (右上) -->
+        <button id="close-sidebar-btn" class="absolute top-4 right-4 text-gray-400 hover:text-fitpink bg-gray-50 hover:bg-pink-50 rounded-full p-2 transition-colors duration-300">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <!-- 上部の細いピンクライン -->
+        <div class="h-1 bg-fitpink w-full flex-shrink-0"></div>
         
-        <div class="relative z-10 text-center flex flex-col items-center">
-            <!-- 施設名（斜めバッジ） -->
-            <div class="animate-slide-up bg-fitpink text-white font-black px-6 md:px-8 py-2 md:py-3 text-sm md:text-lg tracking-widest transform -skew-x-12 mb-6 md:mb-8 shadow-lg">
-                <span class="inline-block transform skew-x-12">FIT365 京王堀之内</span>
+        <div class="pt-8 pb-6 flex items-center justify-center border-b border-gray-100 flex-shrink-0">
+            <span class="text-sm font-black text-gray-300 tracking-[0.3em] uppercase">Select Area</span>
+        </div>
+        
+        <!-- メニューボタン群 -->
+        <nav id="area-menu" class="flex flex-col flex-grow p-4 gap-4">
+            <!-- JSで生成 -->
+        </nav>
+    </aside>
+
+    <!-- 右側：メインコンテンツ -->
+    <main id="main-content" class="ml-64 flex-1 min-w-0 flex flex-col transition-all duration-500 ease-in-out relative z-10">
+        
+        <!-- ファーストビュー (ヒーローセクション) : 最前面への浮き出しを意識 -->
+        <div class="relative w-full bg-fitdark py-16 md:py-24 px-4 flex flex-col items-center justify-center border-b-[8px] border-fitpink overflow-hidden shadow-2xl z-20">
+            <!-- 背景の装飾的なメッシュグラデーション -->
+            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-800 via-fitdark to-fitdark opacity-50"></div>
+            
+            <div class="relative z-30 animate-pop-up bg-fitpink text-white font-black px-6 py-2 text-xs md:text-sm tracking-widest transform -skew-x-12 mb-6 shadow-[0_10px_20px_rgba(240,91,130,0.4)] border border-pink-400">
+                <span class="inline-block transform skew-x-12 drop-shadow-md">FIT365 京王堀之内</span>
             </div>
             
-            <!-- GRAND OPENING アニメーション -->
-            <h2 class="text-5xl md:text-7xl lg:text-[8rem] font-black leading-[0.95] tracking-tighter uppercase mb-6 md:mb-8">
+            <h2 class="relative z-30 text-5xl md:text-7xl lg:text-[8rem] font-black leading-[0.9] tracking-tighter uppercase mb-6 text-center drop-shadow-[0_20px_20px_rgba(0,0,0,0.8)]">
                 <span class="block animate-hero-text">GRAND</span>
                 <span class="block animate-hero-text text-fitpink" style="animation-delay: 0.1s;">OPENING</span>
             </h2>
             
-            <!-- 日付 -->
-            <div class="animate-slide-up delay-1 flex items-center justify-center gap-4 md:gap-6 mt-2">
-                <div class="h-[2px] w-8 md:w-16 bg-white/30"></div>
-                <span class="text-white font-black text-2xl md:text-4xl tracking-wider">4.1 WED</span>
-                <div class="h-[2px] w-8 md:w-16 bg-white/30"></div>
+            <div class="relative z-30 animate-pop-up flex items-center justify-center gap-4 mt-4" style="animation-delay: 0.4s;">
+                <div class="h-[2px] w-8 md:w-16 bg-gradient-to-r from-transparent to-white"></div>
+                <span class="text-white font-black text-2xl md:text-4xl tracking-[0.2em] drop-shadow-lg">4.1 WED</span>
+                <div class="h-[2px] w-8 md:w-16 bg-gradient-to-l from-transparent to-white"></div>
             </div>
         </div>
-    </div>
 
-    <!-- メインコンテンツ -->
-    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 md:py-20 flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
-        
-        <!-- 左側：台形ボックスのメニュー -->
-        <aside class="md:w-72 flex-shrink-0">
-            <div class="md:sticky md:top-28">
-                <!-- モバイル時は横並び、PC時は縦並び -->
-                <nav id="area-menu" class="flex md:flex-col gap-2 md:gap-0 overflow-x-auto no-scrollbar pb-4 md:pb-0 px-1 md:px-0">
-                    <!-- JSで生成 -->
-                </nav>
-            </div>
-        </aside>
-
-        <!-- 右側：マシン一覧表示エリア -->
-        <div class="flex-grow min-w-0">
-            <!-- 選択中エリアのタイトル（スポーティな装飾付き） -->
-            <div class="mb-8 md:mb-10 flex items-center gap-3 md:gap-4 overflow-hidden">
-                <div class="w-3 h-10 md:h-12 bg-fitpink transform -skew-x-12 flex-shrink-0"></div>
-                <h2 id="current-area-title" class="text-3xl md:text-4xl lg:text-5xl font-black text-fitdark tracking-tight truncate transition-all duration-300">
-                    <!-- JSで挿入 -->
-                </h2>
+        <!-- マシン一覧エリア -->
+        <div class="px-4 md:px-8 lg:px-12 py-12 md:py-16 relative z-10">
+            
+            <!-- 選択中エリアのタイトル（中央配置・四角枠のおしゃれなデザインに変更） -->
+            <div class="mb-12 flex items-center justify-center relative z-20 w-full px-2">
+                <div id="title-box" class="border-[4px] px-8 md:px-16 py-3 md:py-5 bg-white/95 backdrop-blur-sm transition-all duration-500 relative flex items-center justify-center">
+                    <h2 id="current-area-title" class="text-2xl md:text-4xl lg:text-5xl font-black tracking-widest transition-colors duration-300 text-center uppercase relative z-10">
+                        <!-- JSで挿入 -->
+                    </h2>
+                </div>
             </div>
             
-            <!-- マシンカードのグリッド -->
-            <div id="machine-grid" class="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+            <!-- グリッドレイアウト -->
+            <div id="machine-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 relative z-10">
                 <!-- JSで生成 -->
             </div>
         </div>
     </main>
 
-    <!-- データと表示制御のスクリプト -->
     <script>
+        // 画像読み込みエラー処理
         window.handleImageError = function(imgElement) {
             const exts = ['.jpg', '.png', '.webp', '.jpeg', '.JPG', '.PNG'];
             let currentIndex = parseInt(imgElement.getAttribute('data-ext-index') || '0');
@@ -179,14 +167,16 @@
                 imgElement.src = `${baseName}${exts[currentIndex]}`; 
             } else {
                 imgElement.onerror = null;
-                imgElement.src = 'https://placehold.co/600x600/eeeeee/999999?text=COMING+SOON&font=Oswald';
+                imgElement.src = 'https://placehold.co/400x400/eeeeee/999999?text=NO+IMAGE&font=Noto+Sans+JP';
             }
         };
 
+        // 各エリアにテーマカラーを追加
         const gymData = [
             {
                 id: 'cardio',
                 title: '有酸素エリア',
+                color: '#3b82f6', // ブルー
                 items: [
                     { name: 'トレッドミル', count: '20', imgBase: 'treadmill' },
                     { name: 'エリプティカルトレーナー', count: '4', imgBase: 'elliptical-trainer' },
@@ -198,6 +188,7 @@
             {
                 id: 'resistance',
                 title: 'レジスタンスエリア',
+                color: '#f97316', // オレンジ
                 items: [
                     { name: 'レッグエクステンション・カールコンボ', count: '1', imgBase: 'leg-extension-curl' },
                     { name: 'レッグエクステンション', count: '1', imgBase: 'leg-extension' },
@@ -222,6 +213,7 @@
             {
                 id: 'freeweight',
                 title: 'フリーウエイトエリア',
+                color: '#ef4444', // レッド
                 items: [
                     { name: 'パワーラック', count: '6', imgBase: 'power-rack' },
                     { name: 'スミスマシン', count: '2', imgBase: 'smith-machine' },
@@ -252,6 +244,7 @@
             {
                 id: 'ladies',
                 title: 'レディースエリア',
+                color: '#f05b82', // FITピンク
                 items: [
                     { name: 'トレッドミル', count: '4', imgBase: 'l-treadmill' },
                     { name: 'エリプティカルトレーナー', count: '1', imgBase: 'l-elliptical' },
@@ -270,6 +263,7 @@
             {
                 id: 'functional',
                 title: 'ファンクショナル',
+                color: '#eab308', // イエロー
                 items: [
                     { name: '腹筋台', count: '1', imgBase: '' },
                     { name: '背筋台', count: '1', imgBase: '' },
@@ -287,6 +281,7 @@
             {
                 id: 'premium',
                 title: 'プレミアムルーム',
+                color: '#a855f7', // パープル
                 items: [
                     { name: 'タンニングマシン', count: '1', imgBase: 'tanning' },
                     { name: '脱毛マシン', count: '1', imgBase: 'hair-removal' },
@@ -301,95 +296,147 @@
         const menuContainer = document.getElementById('area-menu');
         const gridContainer = document.getElementById('machine-grid');
         const titleContainer = document.getElementById('current-area-title');
+        const titleBox = document.getElementById('title-box');
+        
+        // サイドバー制御
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const openBtn = document.getElementById('open-sidebar-btn');
+        const closeBtn = document.getElementById('close-sidebar-btn');
+
         let currentActiveId = null;
+
+        function toggleSidebar(show) {
+            if (show) {
+                sidebar.classList.remove('-translate-x-full');
+                // PC画面ならメインコンテンツを右にずらす
+                if (window.innerWidth >= 768) {
+                    mainContent.classList.add('ml-64');
+                    mainContent.classList.remove('ml-0');
+                }
+                openBtn.classList.add('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                mainContent.classList.remove('ml-64');
+                mainContent.classList.add('ml-0');
+                openBtn.classList.remove('hidden');
+            }
+        }
+
+        openBtn.addEventListener('click', () => toggleSidebar(true));
+        closeBtn.addEventListener('click', () => toggleSidebar(false));
+
+        // スマホ表示時は初期状態でメニューを閉じておく
+        if (window.innerWidth < 768) {
+            toggleSidebar(false);
+        }
 
         function buildMenu() {
             gymData.forEach((area, index) => {
                 const btn = document.createElement('button');
-                // スマホ時は横並びにするため、w-full は md:w-full に設定
-                btn.className = `menu-btn group flex-shrink-0 w-48 md:w-full block focus:outline-none mb-0 md:mb-3`;
+                // 四角く囲った中央揃えのボタン
+                btn.className = `w-full block focus:outline-none mb-4 rounded-xl border-2 transition-all duration-300 relative overflow-hidden group`;
+                btn.style.borderColor = area.color;
                 
                 btn.innerHTML = `
-                    <div class="menu-btn-box relative border border-gray-200 bg-white group-hover:border-fitpink group-hover:shadow-[4px_4px_0px_#f05b82] transition-all duration-300 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between">
-                        <span class="menu-btn-text text-sm md:text-lg font-black tracking-widest text-gray-400 transition-colors duration-300 whitespace-nowrap">${area.title}</span>
-                        <svg class="menu-btn-icon w-4 h-4 md:w-5 md:h-5 text-gray-300 group-hover:text-fitpink transition-all duration-300 transform group-hover:translate-x-1 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                    <div class="menu-btn-bg absolute inset-0 transition-transform duration-300 origin-left scale-x-0 group-hover:scale-x-100" style="background-color: ${area.color}; opacity: 0.1;"></div>
+                    <div class="menu-btn-content relative z-10 px-4 py-4 flex items-center justify-center transition-colors duration-300 bg-white">
+                        <span class="text-sm font-black tracking-widest text-center uppercase" style="color: ${area.color};">${area.title}</span>
                     </div>
                 `;
                 
-                btn.onclick = () => selectArea(area.id, btn);
+                btn.onclick = () => selectArea(area.id, btn, area.color);
                 menuContainer.appendChild(btn);
 
                 if (index === 0) {
-                    selectArea(area.id, btn);
+                    selectArea(area.id, btn, area.color);
                 }
             });
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         }
 
-        function selectArea(id, selectedBtn) {
+        function selectArea(id, selectedBtn, color) {
             if (currentActiveId === id) return;
             currentActiveId = id;
 
-            // メニューのアクティブ状態切り替え
+            // メニューのアクティブ状態の切り替え
             const allBtns = menuContainer.querySelectorAll('button');
             allBtns.forEach(btn => {
+                const content = btn.querySelector('.menu-btn-content');
+                const span = content.querySelector('span');
+                const btnColor = btn.style.borderColor;
+
                 if (btn === selectedBtn) {
-                    btn.classList.add('active');
+                    content.style.backgroundColor = btnColor;
+                    span.style.color = '#ffffff';
+                    btn.classList.add('shadow-lg', 'scale-[1.02]');
                 } else {
-                    btn.classList.remove('active');
+                    content.style.backgroundColor = '#ffffff';
+                    span.style.color = btnColor;
+                    btn.classList.remove('shadow-lg', 'scale-[1.02]');
                 }
             });
 
             const areaData = gymData.find(a => a.id === id);
             
-            // 右側のタイトルの切り替え演出
+            // 右側のタイトルの切り替え（色と枠線の色も連動）
             titleContainer.style.opacity = '0';
-            titleContainer.style.transform = 'translateX(-20px)';
+            titleContainer.style.transform = 'translateY(-10px)';
             
             setTimeout(() => {
                 titleContainer.innerHTML = areaData.title;
+                titleContainer.style.color = areaData.color;
+                titleBox.style.borderColor = areaData.color;
+                // 色付きの立体的な影を追加
+                titleBox.style.boxShadow = `6px 6px 0px ${areaData.color}30`;
                 titleContainer.style.opacity = '1';
-                titleContainer.style.transform = 'translateX(0)';
+                titleContainer.style.transform = 'translateY(0)';
             }, 200);
 
             gridContainer.innerHTML = '';
 
-            // マシンカードの生成
+            // ダイナミックにズームするカードの生成
             areaData.items.forEach((item, index) => {
                 const card = document.createElement('div');
-                card.className = `machine-card bg-white p-3 md:p-5 shadow-sm hover:shadow-[0_15px_30px_rgb(240,91,130,0.1)] rounded-xl flex flex-col group cursor-default border border-gray-100`;
+                // dynamic-hoverクラスでカード全体が浮き上がる
+                card.className = `machine-card bg-white p-4 rounded-2xl flex flex-col group cursor-default border border-gray-100 dynamic-hover`;
 
                 const countText = item.count.includes('迄') || item.count === '式' ? item.count : `${item.count} 台`;
 
                 let imgHTML = '';
                 if (item.imgBase) {
-                    // 画像にimg-blendクラスを当てて背景のグレーに馴染ませる
-                    imgHTML = `<img src="${item.imgBase}.jpg" 
-                             alt="${item.name}" 
-                             data-basename="${item.imgBase}"
-                             data-ext-index="0"
-                             onerror="handleImageError(this)"
-                             class="w-full h-full object-contain p-2 md:p-4 img-blend group-hover:scale-105 transition-transform duration-500 ease-out">`;
+                    // 画像自体も大きくズームアウトする
+                    imgHTML = `<img src="${item.imgBase}.jpg" alt="${item.name}" data-basename="${item.imgBase}" data-ext-index="0" onerror="handleImageError(this)" class="w-full h-full object-contain p-2 img-blend group-hover:scale-125 transition-transform duration-700 ease-out">`;
                 } else {
-                    imgHTML = `<img src="https://placehold.co/600x600/f0f0f0/cccccc?text=COMING+SOON&font=Oswald" alt="${item.name}" class="w-full h-full object-contain p-2 md:p-4 mix-blend-multiply group-hover:scale-105 transition-transform duration-500 ease-out">`;
+                    imgHTML = `<img src="https://placehold.co/400x400/f0f0f0/cccccc?text=NO+IMAGE&font=Noto+Sans+JP" alt="${item.name}" class="w-full h-full object-contain p-2 mix-blend-darken group-hover:scale-110 transition-transform duration-700 ease-out">`;
                 }
 
+                // 奥の層（うすい色）と手前の層（画像）を重ねる
                 card.innerHTML = `
-                    <div class="relative aspect-square bg-[#f4f4f5] mb-4 rounded-lg overflow-hidden flex items-center justify-center border border-gray-50">
-                        ${imgHTML}
-                        <!-- 平行四辺形のスタイリッシュなバッジ -->
-                        <div class="absolute top-2 right-2 md:top-3 md:right-3 overflow-hidden rounded-sm shadow-sm">
-                            <div class="bg-fitdark group-hover:bg-fitpink transition-colors duration-300 text-white text-xs font-black px-2 py-1 slant-badge">
-                                <span class="slant-badge-inner tracking-wider">${countText}</span>
+                    <div class="relative aspect-square mb-4 rounded-xl overflow-hidden flex items-center justify-center border border-gray-50/50" style="background-color: ${areaData.color}10;">
+                        <!-- 背景にうっすら斜めのラインを入れてテック感を演出 -->
+                        <div class="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.05)_10px,rgba(0,0,0,0.05)_20px)]"></div>
+                        
+                        <div class="relative z-10 w-full h-full flex items-center justify-center p-2 drop-shadow-md">
+                            ${imgHTML}
+                        </div>
+                        
+                        <!-- 右上の台数バッジ (エリアカラーに連動) -->
+                        <div class="absolute top-2 right-2 overflow-hidden rounded shadow-sm z-20">
+                            <div class="text-white text-xs font-black px-2 py-1 transform -skew-x-12" style="background-color: ${areaData.color};">
+                                <span class="inline-block transform skew-x-12 tracking-wider">${countText}</span>
                             </div>
                         </div>
                     </div>
-                    <div class="flex-grow flex items-center justify-start">
-                        <h4 class="font-bold text-gray-800 text-sm md:text-base tracking-tight leading-snug group-hover:text-fitpink transition-colors duration-300">${item.name}</h4>
+                    <div class="flex-grow flex items-center justify-center z-10 px-2">
+                        <h4 class="font-black text-gray-800 text-sm md:text-base tracking-tight leading-snug text-center transition-colors duration-300" style="group-hover:color: ${areaData.color};">${item.name}</h4>
                     </div>
                 `;
                 gridContainer.appendChild(card);
 
-                // 時間差でカードを下から出現させる
+                // 時間差出現
                 setTimeout(() => {
                     card.classList.add('show');
                 }, 40 * index);
