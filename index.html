@@ -4,338 +4,398 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FIT365 京王堀之内 - マシンラインナップ</title>
-    <!-- Tailwind CSS (スタイリング用) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons (アイコン用) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
     
     <script>
-        // FIT365のブランドカラーを設定
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        fitpink: '#f05b82', // FIT365のピンク
-                        fitdark: '#333333', // FIT365のダークグレー
-                        fitlight: '#f5f5f5',
+                        fitpink: '#f05b82',
+                        fitdark: '#111111', 
+                        fitgray: '#f4f4f5',
+                    },
+                    fontFamily: {
+                        // 力強いフォントファミリーの設定
+                        sans: ['"Helvetica Neue"', 'Arial', '"Hiragino Kaku Gothic ProN"', '"Hiragino Sans"', 'Meiryo', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     <style>
-        /* カスタムアニメーション */
-        @keyframes fadeInUp {
+        /* スムーススクロールとベース背景 */
+        html { scroll-behavior: smooth; background-color: #f8f8f8; }
+
+        /* スクロールバー非表示 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- メニューボタン（台形/平行四辺形）のスタイリング --- */
+        .menu-btn-box {
+            transform: skewX(-12deg);
+            margin: 0 8px; /* skewによるはみ出し防止 */
+        }
+        .menu-btn-text, .menu-btn-icon {
+            transform: skewX(12deg); /* 中身の文字はまっすぐに戻す */
+        }
+        
+        /* アクティブ時のスタイル */
+        .menu-btn.active .menu-btn-box {
+            background-color: #f05b82;
+            border-color: #f05b82;
+            box-shadow: 6px 6px 0px rgba(17, 17, 17, 0.1); /* 黒のソリッドな影 */
+        }
+        .menu-btn.active .menu-btn-text {
+            color: #ffffff;
+        }
+        .menu-btn.active .menu-btn-icon {
+            color: #ffffff;
+            transform: skewX(12deg) translateX(4px);
+        }
+
+        /* --- Heroセクションのアニメーション --- */
+        @keyframes strokeDash {
+            0% { -webkit-text-stroke: 1px transparent; color: transparent; transform: translateY(30px); opacity: 0;}
+            30% { -webkit-text-stroke: 1px rgba(255,255,255,0.8); color: transparent; transform: translateY(0); opacity: 1;}
+            100% { -webkit-text-stroke: 0px transparent; color: #fff; }
+        }
+        .animate-hero-text {
+            animation: strokeDash 1.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+        
+        @keyframes slideUpFade {
             0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-        .animate-item {
-            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0; /* 初期状態は透明 */
+        .animate-slide-up {
+            opacity: 0;
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-1 { animation-delay: 0.6s; }
+
+        /* --- グリッドカードの演出 --- */
+        .machine-card {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .machine-card.show {
+            opacity: 1;
+            transform: translateY(0);
         }
         
-        /* スクロールバーの非表示（モバイルメニュー用） */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
+        /* 画像の背景なじませ＆ズーム */
+        .img-blend {
+            mix-blend-mode: darken; /* 白背景の画像をグレー背景に自然に馴染ませる */
         }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        
+        /* 平行四辺形のスピードバッジ */
+        .slant-badge {
+            transform: skewX(-15deg);
         }
-
-        /* 画像のプレースホルダー背景 */
-        .img-placeholder {
-            background-image: radial-gradient(circle, #f0f0f0 10%, #e0e0e0 100%);
+        .slant-badge-inner {
+            display: inline-block;
+            transform: skewX(15deg);
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
+<body class="text-gray-900 flex flex-col min-h-screen">
 
     <!-- ヘッダー -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <!-- 上部ピンクの細いバー -->
-        <div class="h-1.5 bg-fitpink w-full"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <!-- ロゴの代わり -->
-                <div class="w-10 h-10 rounded-full bg-fitpink text-white flex items-center justify-center font-bold text-xl">F</div>
-                <div>
-                    <h1 class="font-bold text-xl tracking-wider text-fitdark">FIT365 <span class="text-sm font-normal text-gray-500">京王堀之内</span></h1>
-                </div>
-            </div>
-            <div class="hidden md:block">
-                <span class="bg-fitpink text-white px-4 py-2 rounded-full font-bold text-sm shadow-md">
-                    2026年4月1日 グランドオープン
-                </span>
-            </div>
+    <header class="fixed w-full top-0 z-50 bg-white/95 backdrop-blur-md shadow-[0_1px_0_rgba(0,0,0,0.05)] transition-all">
+        <div class="h-1 bg-fitpink w-full"></div>
+        <div class="max-w-7xl mx-auto px-4 py-3 md:py-4 flex items-center gap-3">
+            <div class="w-8 h-8 md:w-10 md:h-10 bg-fitpink text-white flex items-center justify-center font-black text-lg md:text-xl transform -skew-x-6">F</div>
+            <h1 class="font-black text-xl md:text-2xl tracking-[0.1em] text-fitdark uppercase">FIT365</h1>
         </div>
     </header>
 
-    <!-- ヒーローバナー -->
-    <div class="bg-fitdark text-white py-12 px-4 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center"></div>
-        <div class="max-w-7xl mx-auto relative z-10 text-center">
-            <h2 class="text-3xl md:text-5xl font-bold mb-4 tracking-tight">圧倒的スケールの<br class="md:hidden">マシンラインナップ</h2>
-            <p class="text-gray-300 mb-6 max-w-2xl mx-auto">地域最大級の設備。初心者から上級者まで満足できる、最新鋭のマシンと充実のエリアをご紹介します。</p>
-            <div class="md:hidden inline-block bg-fitpink text-white px-5 py-2 rounded-full font-bold text-sm shadow-md mb-2">
-                2026年4月1日 グランドオープン
+    <!-- ファーストビュー (見やすさとアニメーション特化) -->
+    <div class="relative w-full min-h-[60vh] md:min-h-[70vh] bg-fitdark flex flex-col items-center justify-center pt-20 px-4 border-b-[12px] border-fitpink">
+        
+        <div class="relative z-10 text-center flex flex-col items-center">
+            <!-- 施設名（斜めバッジ） -->
+            <div class="animate-slide-up bg-fitpink text-white font-black px-6 md:px-8 py-2 md:py-3 text-sm md:text-lg tracking-widest transform -skew-x-12 mb-6 md:mb-8 shadow-lg">
+                <span class="inline-block transform skew-x-12">FIT365 京王堀之内</span>
+            </div>
+            
+            <!-- GRAND OPENING アニメーション -->
+            <h2 class="text-5xl md:text-7xl lg:text-[8rem] font-black leading-[0.95] tracking-tighter uppercase mb-6 md:mb-8">
+                <span class="block animate-hero-text">GRAND</span>
+                <span class="block animate-hero-text text-fitpink" style="animation-delay: 0.1s;">OPENING</span>
+            </h2>
+            
+            <!-- 日付 -->
+            <div class="animate-slide-up delay-1 flex items-center justify-center gap-4 md:gap-6 mt-2">
+                <div class="h-[2px] w-8 md:w-16 bg-white/30"></div>
+                <span class="text-white font-black text-2xl md:text-4xl tracking-wider">4.1 WED</span>
+                <div class="h-[2px] w-8 md:w-16 bg-white/30"></div>
             </div>
         </div>
     </div>
 
     <!-- メインコンテンツ -->
-    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row gap-8">
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 md:py-20 flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16">
         
-        <!-- 左側：エリア選択メニュー -->
-        <aside class="md:w-64 flex-shrink-0">
-            <div class="md:sticky md:top-24">
-                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 hidden md:block">Facility Areas</h3>
-                <!-- モバイル時は横スクロール、PC時は縦並び -->
-                <nav id="area-menu" class="flex md:flex-col gap-2 overflow-x-auto no-scrollbar pb-4 md:pb-0">
-                    <!-- メニュー項目はJavaScriptで生成されます -->
+        <!-- 左側：台形ボックスのメニュー -->
+        <aside class="md:w-72 flex-shrink-0">
+            <div class="md:sticky md:top-28">
+                <!-- モバイル時は横並び、PC時は縦並び -->
+                <nav id="area-menu" class="flex md:flex-col gap-2 md:gap-0 overflow-x-auto no-scrollbar pb-4 md:pb-0 px-1 md:px-0">
+                    <!-- JSで生成 -->
                 </nav>
             </div>
         </aside>
 
         <!-- 右側：マシン一覧表示エリア -->
-        <div class="flex-grow">
-            <div class="mb-6 border-b-2 border-fitpink pb-2 inline-block">
-                <h2 id="current-area-title" class="text-2xl font-bold text-fitdark flex items-center gap-2">
-                    <!-- タイトルがここに入ります -->
+        <div class="flex-grow min-w-0">
+            <!-- 選択中エリアのタイトル（スポーティな装飾付き） -->
+            <div class="mb-8 md:mb-10 flex items-center gap-3 md:gap-4 overflow-hidden">
+                <div class="w-3 h-10 md:h-12 bg-fitpink transform -skew-x-12 flex-shrink-0"></div>
+                <h2 id="current-area-title" class="text-3xl md:text-4xl lg:text-5xl font-black text-fitdark tracking-tight truncate transition-all duration-300">
+                    <!-- JSで挿入 -->
                 </h2>
             </div>
             
             <!-- マシンカードのグリッド -->
-            <div id="machine-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                <!-- マシンカードはJavaScriptで生成されます -->
+            <div id="machine-grid" class="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+                <!-- JSで生成 -->
             </div>
         </div>
-
     </main>
-
-    <footer class="bg-fitdark text-gray-400 py-8 text-center text-sm">
-        <p>&copy; 2026 FIT365 京王堀之内 All Rights Reserved.</p>
-        <p class="mt-2 text-xs">※画像はイメージです。実際のマシンとは一部異なる場合があります。</p>
-    </footer>
 
     <!-- データと表示制御のスクリプト -->
     <script>
-        // --- データの定義 ---
-        // いただいたリストと画像ファイル名を紐付けています。
-        // 画像が見つからない場合のエラーを防ぐため、onerrorでダミー画像を表示するようにしています。
+        window.handleImageError = function(imgElement) {
+            const exts = ['.jpg', '.png', '.webp', '.jpeg', '.JPG', '.PNG'];
+            let currentIndex = parseInt(imgElement.getAttribute('data-ext-index') || '0');
+            currentIndex++;
+            
+            if (currentIndex < exts.length) {
+                imgElement.setAttribute('data-ext-index', currentIndex);
+                const baseName = imgElement.getAttribute('data-basename');
+                imgElement.src = `${baseName}${exts[currentIndex]}`; 
+            } else {
+                imgElement.onerror = null;
+                imgElement.src = 'https://placehold.co/600x600/eeeeee/999999?text=COMING+SOON&font=Oswald';
+            }
+        };
+
         const gymData = [
             {
                 id: 'cardio',
                 title: '有酸素エリア',
-                icon: 'activity',
                 items: [
-                    { name: 'トレッドミル', count: '20', img: 'treadmill.jpg' },
-                    { name: 'エリプティカルトレーナー', count: '4', img: 'elliptical-trainer.jpg' },
-                    { name: 'ステアクライマー', count: '2', img: 'stair-climber.jpg' },
-                    { name: 'リカンベントバイク', count: '2', img: 'recumbent-bike.jpg' },
-                    { name: 'アップライトバイク', count: '2', img: 'upright-bike.jpg' }
+                    { name: 'トレッドミル', count: '20', imgBase: 'treadmill' },
+                    { name: 'エリプティカルトレーナー', count: '4', imgBase: 'elliptical-trainer' },
+                    { name: 'ステアクライマー', count: '2', imgBase: 'stair-climber' },
+                    { name: 'リカンベントバイク', count: '2', imgBase: 'recumbent-bike' },
+                    { name: 'アップライトバイク', count: '2', imgBase: 'upright-bike' }
                 ]
             },
             {
                 id: 'resistance',
                 title: 'レジスタンスエリア',
-                icon: 'dumbbell',
                 items: [
-                    { name: 'レッグエクステンション・カールコンボ', count: '1', img: 'leg-extension-curl.jpg' },
-                    { name: 'レッグエクステンション', count: '1', img: 'leg-extension.jpg' },
-                    { name: 'レッグカール', count: '1', img: 'leg-curl.jpg' },
-                    { name: 'アブダクターアダクターコンボ', count: '1', img: 'hip-abductor-adductor.jpg' },
-                    { name: 'レッグプレス', count: '2', img: 'leg-press.jpg' },
-                    { name: 'プローンレッグカール', count: '1', img: 'prone-leg-curl.jpg' },
-                    { name: 'アダクター', count: '1', img: 'hip-abductor-adductor.jpg' },
-                    { name: 'アブダクター', count: '1', img: 'hip-abductor.jpg' },
-                    { name: 'バイセプスカール', count: '2', img: 'biceps-curl.jpg' },
-                    { name: 'アブドミナルクランチ', count: '2', img: 'abdominal-crunch.jpg' },
-                    { name: 'ロータリートルソー', count: '1', img: 'rotary-torso.jpg' },
-                    { name: 'ショルダープレス', count: '1', img: 'shoulder-press.jpg' },
-                    { name: 'トライセプスエクステンション', count: '1', img: 'triceps-press.jpg' },
-                    { name: 'ペックフライ＆リアコンボ', count: '2', img: 'peck-fly-rear-combo.jpg' },
-                    { name: 'チェストプレス', count: '2', img: 'chest-press.jpg' },
-                    { name: 'ラットプル＆シーテッドロー', count: '2', img: 'lat-pull-seated-row-combo.jpg' },
-                    { name: 'ローロー', count: '2', img: 'low-row.jpg' },
-                    { name: '8スタック', count: '1', img: '8-stack.jpg' }
+                    { name: 'レッグエクステンション・カールコンボ', count: '1', imgBase: 'leg-extension-curl' },
+                    { name: 'レッグエクステンション', count: '1', imgBase: 'leg-extension' },
+                    { name: 'レッグカール', count: '1', imgBase: 'leg-curl' },
+                    { name: 'アブダクターアダクターコンボ', count: '1', imgBase: 'hip-abductor-adductor' },
+                    { name: 'レッグプレス', count: '2', imgBase: 'leg-press' },
+                    { name: 'プローンレッグカール', count: '1', imgBase: 'prone-leg-curl' },
+                    { name: 'アダクター', count: '1', imgBase: 'hip-abductor-adductor' },
+                    { name: 'アブダクター', count: '1', imgBase: 'hip-abductor' },
+                    { name: 'バイセプスカール', count: '2', imgBase: 'biceps-curl' },
+                    { name: 'アブドミナルクランチ', count: '2', imgBase: 'abdominal-crunch' },
+                    { name: 'ロータリートルソー', count: '1', imgBase: 'rotary-torso' },
+                    { name: 'ショルダープレス', count: '1', imgBase: 'shoulder-press' },
+                    { name: 'トライセプスエクステンション', count: '1', imgBase: 'triceps-press' },
+                    { name: 'ペックフライ＆リアコンボ', count: '2', imgBase: 'peck-fly-rear-combo' },
+                    { name: 'チェストプレス', count: '2', imgBase: 'chest-press' },
+                    { name: 'ラットプル＆シーテッドロー', count: '2', imgBase: 'lat-pull-seated-row-combo' },
+                    { name: 'ローロー', count: '2', imgBase: 'low-row' },
+                    { name: '8スタック', count: '1', imgBase: '8-stack' }
                 ]
             },
             {
                 id: 'freeweight',
                 title: 'フリーウエイトエリア',
-                icon: 'weight',
                 items: [
-                    { name: 'パワーラック', count: '6', img: 'power-rack.jpg' },
-                    { name: 'スミスマシン', count: '2', img: 'smith-machine.jpg' },
-                    { name: 'スーパースミスマシン', count: '1', img: 'super-smith.jpg' },
-                    { name: 'ONI コンボラック', count: '2', img: 'oni-combo-rack.jpg' },
-                    { name: 'オリンピックベンチ', count: '1', img: 'olympic-bench.webp' },
-                    { name: 'PLワイドチェストプレス', count: '1', img: 'pl-wide-chest-press.jpg' },
-                    { name: 'PLインクラインプレス', count: '1', img: 'pl-incline-press.jpg' },
-                    { name: 'PLディクラインプレス', count: '1', img: 'decline-press.jpg' },
-                    { name: 'PLチェスト＆バック', count: '1', img: 'pl-chest-back.jpg' },
-                    { name: 'PLラテラルレイズ', count: '1', img: 'pl-lateral-raise.jpg' },
-                    { name: 'PLアイソラテラルショルダープレス', count: '1', img: 'pl-shoulder-press.jpg' },
-                    { name: 'PLワイドプルダウン', count: '1', img: 'pl-wide-pulldown.jpg' },
-                    { name: 'PLアイソラテラルハイロー', count: '1', img: 'pl-high-row.jpg' },
-                    { name: 'PLアイソラテラルDYロー', count: '1', img: 'pl-dy-row.jpg' },
-                    { name: 'PLアイソラテラルロー', count: '1', img: 'iso-row.jpg' },
-                    { name: '45度レッグプレス', count: '1', img: '45-leg-press.jpg' },
-                    { name: 'ハックスクワット', count: '1', img: 'hack-squat.jpg' },
-                    { name: 'PLシーテッドカーフレイズ', count: '1', img: 'pl-calf-raise.jpg' },
-                    { name: 'アシストチン', count: '1', img: 'assist-chin.jpg' },
-                    { name: 'プリチャーカール', count: '1', img: 'preacher-bench.jpg' },
-                    { name: 'ケーブルマシン', count: '3', img: 'cable-machine.jpg' },
-                    { name: 'ダンベル', count: '50KG迄', img: '' }, 
-                    { name: 'プラットフォーム', count: '3', img: '' },
-                    { name: 'アジャスタブルベンチ', count: '10', img: '' }
+                    { name: 'パワーラック', count: '6', imgBase: 'power-rack' },
+                    { name: 'スミスマシン', count: '2', imgBase: 'smith-machine' },
+                    { name: 'スーパースミスマシン', count: '1', imgBase: 'super-smith' },
+                    { name: 'ONI コンボラック', count: '2', imgBase: 'oni-combo-rack' },
+                    { name: 'オリンピックベンチ', count: '1', imgBase: 'olympic-bench' },
+                    { name: 'PLワイドチェストプレス', count: '1', imgBase: 'pl-wide-chest-press' },
+                    { name: 'PLインクラインプレス', count: '1', imgBase: 'pl-incline-press' },
+                    { name: 'PLディクラインプレス', count: '1', imgBase: 'decline-press' },
+                    { name: 'PLチェスト＆バック', count: '1', imgBase: 'pl-chest-back' },
+                    { name: 'PLラテラルレイズ', count: '1', imgBase: 'pl-lateral-raise' },
+                    { name: 'PLアイソラテラルショルダープレス', count: '1', imgBase: 'pl-shoulder-press' },
+                    { name: 'PLワイドプルダウン', count: '1', imgBase: 'pl-wide-pulldown' },
+                    { name: 'PLアイソラテラルハイロー', count: '1', imgBase: 'pl-high-row' },
+                    { name: 'PLアイソラテラルDYロー', count: '1', imgBase: 'pl-dy-row' },
+                    { name: 'PLアイソラテラルロー', count: '1', imgBase: 'iso-row' },
+                    { name: '45度レッグプレス', count: '1', imgBase: '45-leg-press' },
+                    { name: 'ハックスクワット', count: '1', imgBase: 'hack-squat' },
+                    { name: 'PLシーテッドカーフレイズ', count: '1', imgBase: 'pl-calf-raise' },
+                    { name: 'アシストチン', count: '1', imgBase: 'assist-chin' },
+                    { name: 'プリチャーカール', count: '1', imgBase: 'preacher-bench' },
+                    { name: 'ケーブルマシン', count: '3', imgBase: 'cable-machine' },
+                    { name: 'ダンベル', count: '50KG迄', imgBase: '' }, 
+                    { name: 'プラットフォーム', count: '3', imgBase: '' },
+                    { name: 'アジャスタブルベンチ', count: '10', imgBase: '' }
                 ]
             },
             {
                 id: 'ladies',
                 title: 'レディースエリア',
-                icon: 'flower-2',
                 items: [
-                    { name: 'トレッドミル', count: '4', img: 'l-treadmill.jpg' },
-                    { name: 'エリプティカルトレーナー', count: '1', img: 'l-elliptical.jpg' },
-                    { name: 'ステアクライマー', count: '1', img: 'l-stair-climber.jpg' },
-                    { name: 'アップライトバイク', count: '2', img: 'l-upright-bike.jpg' },
-                    { name: 'レッグプレス', count: '1', img: 'l-leg-press.jpg' },
-                    { name: 'グルート', count: '1', img: 'l-glute.jpg' },
-                    { name: 'レッグエクステンション/カール', count: '1', img: 'l-leg-extension-curl-combo.jpg' },
-                    { name: 'ヒップアブダクター/アダクター', count: '1', img: 'l-hip-abductor-adductor.jpg' },
-                    { name: 'アブ/ローバック', count: '1', img: 'l-ab-low-back.jpg' },
-                    { name: 'チェストプレス', count: '1', img: 'l-chest-press.jpg' },
-                    { name: 'ラットプル＆シーテッドロー', count: '1', img: 'l-lat-pull-seated-row-combo.jpg' },
-                    { name: 'スミスマシン', count: '1', img: 'l-smith-machine.jpg' }
+                    { name: 'トレッドミル', count: '4', imgBase: 'l-treadmill' },
+                    { name: 'エリプティカルトレーナー', count: '1', imgBase: 'l-elliptical' },
+                    { name: 'ステアクライマー', count: '1', imgBase: 'l-stair-climber' },
+                    { name: 'アップライトバイク', count: '2', imgBase: 'l-upright-bike' },
+                    { name: 'レッグプレス', count: '1', imgBase: 'l-leg-press' },
+                    { name: 'グルート', count: '1', imgBase: 'l-glute' },
+                    { name: 'レッグエクステンション/カール', count: '1', imgBase: 'l-leg-extension-curl-combo' },
+                    { name: 'ヒップアブダクター/アダクター', count: '1', imgBase: 'l-hip-abductor-adductor' },
+                    { name: 'アブ/ローバック', count: '1', imgBase: 'l-ab-low-back' },
+                    { name: 'チェストプレス', count: '1', imgBase: 'l-chest-press' },
+                    { name: 'ラットプル＆シーテッドロー', count: '1', imgBase: 'l-lat-pull-seated-row-combo' },
+                    { name: 'スミスマシン', count: '1', imgBase: 'l-smith-machine' }
                 ]
             },
             {
                 id: 'functional',
-                title: 'ファンクショナルエリア',
-                icon: 'move',
+                title: 'ファンクショナル',
                 items: [
-                    { name: '腹筋台', count: '1', img: '' },
-                    { name: '背筋台', count: '1', img: '' },
-                    { name: 'ラダー', count: '1', img: 'ladder.jpg' },
-                    { name: 'プライオBOX', count: '2', img: 'plyo.jpg' },
-                    { name: 'ケトルベル', count: '式', img: 'kettlebell.jpg' }, 
-                    { name: 'タンク', count: '1', img: 'tank.jpg' },
-                    { name: 'ファンクショナルラック', count: '1', img: 'functional-rack.jpg' },
-                    { name: 'YURAGI チェスト', count: '1', img: 'yuragi-chest.png' },
-                    { name: 'YURAGI 2in1', count: '1', img: 'yuragi-2in1.jpg' },
-                    { name: 'YURAGI アダクター', count: '1', img: 'yuragi-adductor.png' },
-                    { name: 'ケーブル', count: '1', img: 'cable.jpg' }
+                    { name: '腹筋台', count: '1', imgBase: '' },
+                    { name: '背筋台', count: '1', imgBase: '' },
+                    { name: 'ラダー', count: '1', imgBase: 'ladder' },
+                    { name: 'プライオBOX', count: '2', imgBase: 'plyo' },
+                    { name: 'ケトルベル', count: '式', imgBase: 'kettlebell' }, 
+                    { name: 'タンク', count: '1', imgBase: 'tank' },
+                    { name: 'ファンクショナルラック', count: '1', imgBase: 'functional-rack' },
+                    { name: 'YURAGI チェスト', count: '1', imgBase: 'yuragi-chest' },
+                    { name: 'YURAGI 2in1', count: '1', imgBase: 'yuragi-2in1' },
+                    { name: 'YURAGI アダクター', count: '1', imgBase: 'yuragi-adductor' },
+                    { name: 'ケーブル', count: '1', imgBase: 'cable' }
                 ]
             },
             {
                 id: 'premium',
                 title: 'プレミアムルーム',
-                icon: 'sparkles',
                 items: [
-                    { name: 'タンニングマシン', count: '1', img: 'tanning.jpg' },
-                    { name: '脱毛マシン', count: '1', img: 'hair-removal.jpeg' },
-                    { name: 'プロテインサーバー', count: '1', img: 'wellness-server.jpg' },
-                    { name: 'マッサージチェア', count: '4', img: 'massage-chair.png' },
-                    { name: '温熱機器ハーフドーム', count: '2', img: 'half-dome-2.jpg' },
-                    { name: 'コワーキングスペース', count: '式', img: 'coworking-space.png' }
+                    { name: 'タンニングマシン', count: '1', imgBase: 'tanning' },
+                    { name: '脱毛マシン', count: '1', imgBase: 'hair-removal' },
+                    { name: 'プロテインサーバー', count: '1', imgBase: 'wellness-server' },
+                    { name: 'マッサージチェア', count: '4', imgBase: 'massage-chair' },
+                    { name: '温熱機器ハーフドーム', count: '2', imgBase: 'half-dome-2' },
+                    { name: 'コワーキングスペース', count: '式', imgBase: 'coworking-space' }
                 ]
             }
         ];
 
-        // --- 画面構築ロジック ---
         const menuContainer = document.getElementById('area-menu');
         const gridContainer = document.getElementById('machine-grid');
         const titleContainer = document.getElementById('current-area-title');
         let currentActiveId = null;
 
-        // メニューを生成
         function buildMenu() {
             gymData.forEach((area, index) => {
                 const btn = document.createElement('button');
-                btn.className = `flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-left transition-all duration-200 whitespace-nowrap md:whitespace-normal border-2 border-transparent`;
-                // 初期状態のデザイン（非アクティブ）
-                btn.classList.add('bg-white', 'text-gray-600', 'hover:bg-pink-50', 'hover:text-fitpink');
+                // スマホ時は横並びにするため、w-full は md:w-full に設定
+                btn.className = `menu-btn group flex-shrink-0 w-48 md:w-full block focus:outline-none mb-0 md:mb-3`;
                 
                 btn.innerHTML = `
-                    <i data-lucide="${area.icon}" class="w-5 h-5"></i>
-                    <span>${area.title}</span>
+                    <div class="menu-btn-box relative border border-gray-200 bg-white group-hover:border-fitpink group-hover:shadow-[4px_4px_0px_#f05b82] transition-all duration-300 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between">
+                        <span class="menu-btn-text text-sm md:text-lg font-black tracking-widest text-gray-400 transition-colors duration-300 whitespace-nowrap">${area.title}</span>
+                        <svg class="menu-btn-icon w-4 h-4 md:w-5 md:h-5 text-gray-300 group-hover:text-fitpink transition-all duration-300 transform group-hover:translate-x-1 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
                 `;
                 
                 btn.onclick = () => selectArea(area.id, btn);
                 menuContainer.appendChild(btn);
 
-                // 最初に一番上のエリアを選択状態にする
                 if (index === 0) {
                     selectArea(area.id, btn);
                 }
             });
-            // Lucideアイコンの描画
-            lucide.createIcons();
         }
 
-        // エリアを選択した時の処理（アニメーション付き切り替え）
         function selectArea(id, selectedBtn) {
             if (currentActiveId === id) return;
             currentActiveId = id;
 
-            // ボタンの見た目（アクティブ状態）を更新
+            // メニューのアクティブ状態切り替え
             const allBtns = menuContainer.querySelectorAll('button');
             allBtns.forEach(btn => {
-                btn.className = `flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-left transition-all duration-200 whitespace-nowrap md:whitespace-normal`;
                 if (btn === selectedBtn) {
-                    btn.classList.add('bg-fitpink', 'text-white', 'shadow-md', 'scale-105', 'md:scale-100', 'md:translate-x-2');
+                    btn.classList.add('active');
                 } else {
-                    btn.classList.add('bg-white', 'text-gray-600', 'hover:bg-pink-50', 'hover:text-fitpink');
+                    btn.classList.remove('active');
                 }
             });
 
-            // 選択されたエリアのデータを取得
             const areaData = gymData.find(a => a.id === id);
             
-            // タイトルを更新
-            titleContainer.innerHTML = `
-                <i data-lucide="${areaData.icon}" class="w-6 h-6 text-fitpink"></i>
-                ${areaData.title}
-            `;
-            lucide.createIcons();
+            // 右側のタイトルの切り替え演出
+            titleContainer.style.opacity = '0';
+            titleContainer.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                titleContainer.innerHTML = areaData.title;
+                titleContainer.style.opacity = '1';
+                titleContainer.style.transform = 'translateX(0)';
+            }, 200);
 
-            // グリッドを一旦空にする
             gridContainer.innerHTML = '';
 
-            // マシンカードを生成して追加
+            // マシンカードの生成
             areaData.items.forEach((item, index) => {
                 const card = document.createElement('div');
-                // アニメーションクラスを付与
-                card.className = `bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100 animate-item flex flex-col`;
-                // 順番にシャシャシャと出るように遅延（delay）を設定
-                card.style.animationDelay = `${index * 0.05}s`;
+                card.className = `machine-card bg-white p-3 md:p-5 shadow-sm hover:shadow-[0_15px_30px_rgb(240,91,130,0.1)] rounded-xl flex flex-col group cursor-default border border-gray-100`;
 
-                // 画像がない場合はプレースホルダー用画像、ある場合はimages/から読み込む
-                // 万が一拡張子が違って読み込めなかった時のための onerror を仕込んでおく
-                const imgSrc = item.img ? `images/${item.img}` : 'https://placehold.co/400x400/eeeeee/999999?text=No+Image';
                 const countText = item.count.includes('迄') || item.count === '式' ? item.count : `${item.count} 台`;
 
-                card.innerHTML = `
-                    <div class="aspect-square w-full img-placeholder relative overflow-hidden group">
-                        <img src="${imgSrc}" 
+                let imgHTML = '';
+                if (item.imgBase) {
+                    // 画像にimg-blendクラスを当てて背景のグレーに馴染ませる
+                    imgHTML = `<img src="${item.imgBase}.jpg" 
                              alt="${item.name}" 
-                             onerror="this.onerror=null; this.src='https://placehold.co/400x400/eeeeee/999999?text=Image+Not+Found';"
-                             class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500">
-                        <div class="absolute top-2 right-2 bg-fitpink text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
-                            ${countText}
+                             data-basename="${item.imgBase}"
+                             data-ext-index="0"
+                             onerror="handleImageError(this)"
+                             class="w-full h-full object-contain p-2 md:p-4 img-blend group-hover:scale-105 transition-transform duration-500 ease-out">`;
+                } else {
+                    imgHTML = `<img src="https://placehold.co/600x600/f0f0f0/cccccc?text=COMING+SOON&font=Oswald" alt="${item.name}" class="w-full h-full object-contain p-2 md:p-4 mix-blend-multiply group-hover:scale-105 transition-transform duration-500 ease-out">`;
+                }
+
+                card.innerHTML = `
+                    <div class="relative aspect-square bg-[#f4f4f5] mb-4 rounded-lg overflow-hidden flex items-center justify-center border border-gray-50">
+                        ${imgHTML}
+                        <!-- 平行四辺形のスタイリッシュなバッジ -->
+                        <div class="absolute top-2 right-2 md:top-3 md:right-3 overflow-hidden rounded-sm shadow-sm">
+                            <div class="bg-fitdark group-hover:bg-fitpink transition-colors duration-300 text-white text-xs font-black px-2 py-1 slant-badge">
+                                <span class="slant-badge-inner tracking-wider">${countText}</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="p-4 flex-grow flex items-center justify-center border-t border-gray-50">
-                        <h4 class="font-bold text-gray-800 text-sm text-center leading-tight">${item.name}</h4>
+                    <div class="flex-grow flex items-center justify-start">
+                        <h4 class="font-bold text-gray-800 text-sm md:text-base tracking-tight leading-snug group-hover:text-fitpink transition-colors duration-300">${item.name}</h4>
                     </div>
                 `;
                 gridContainer.appendChild(card);
+
+                // 時間差でカードを下から出現させる
+                setTimeout(() => {
+                    card.classList.add('show');
+                }, 40 * index);
             });
         }
 
-        // 初期化実行
         document.addEventListener('DOMContentLoaded', () => {
             buildMenu();
         });
