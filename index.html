@@ -21,8 +21,8 @@
                 extend: {
                     colors: {
                         fitpink: '#f05b82',
-                        fitdark: '#0a0a0c', // より深い黒（サイバー感）
-                        fitgray: '#f0f0f5',
+                        fitdark: '#08080a', 
+                        fitgray: '#f4f4f8',
                     },
                     fontFamily: {
                         sans: ['"Noto Sans JP"', 'sans-serif'],
@@ -32,123 +32,103 @@
         }
     </script>
     <style>
-        /* スムーススクロールとベース背景 */
-        html { scroll-behavior: smooth; background-color: #f4f4f8; }
+        /* ベース設定 */
+        html { scroll-behavior: smooth; background-color: #08080a; color: #ffffff; }
+        body { font-family: 'Noto Sans JP', sans-serif; }
 
         /* スクロールバー非表示 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* --- サイバー系 背景パターン --- */
+        /* --- サイバー系背景パターン --- */
         .bg-cyber-grid {
-            background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-        .bg-dot-pattern {
-            background-image: radial-gradient(#d1d5db 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-image: linear-gradient(rgba(240, 91, 130, 0.05) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(240, 91, 130, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
         }
 
-        /* --- スキャンライン（走査線） --- */
-        .scanlines {
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.03) 50%,
-                rgba(0,0,0,0.03)
-            );
-            background-size: 100% 4px;
+        /* --- アニメーション --- */
+        @keyframes neonPulse {
+            0%, 100% { opacity: 0.8; filter: blur(2px); }
+            50% { opacity: 1; filter: blur(4px); }
+        }
+        .animate-neon {
+            animation: neonPulse 2s infinite ease-in-out;
         }
 
-        /* --- サイバー風 アニメーション --- */
         @keyframes strokeDash {
-            0% { -webkit-text-stroke: 1px transparent; color: transparent; transform: translateZ(0) translateY(20px); opacity: 0;}
-            30% { -webkit-text-stroke: 2px rgba(255,255,255,0.8); color: transparent; transform: translateZ(50px) translateY(0); opacity: 1;}
-            100% { -webkit-text-stroke: 0px transparent; color: #fff; transform: translateZ(0);}
+            0% { -webkit-text-stroke: 1px rgba(255,255,255,0.3); color: transparent; transform: translateY(20px); opacity: 0;}
+            50% { -webkit-text-stroke: 1px #fff; color: transparent; opacity: 1;}
+            100% { -webkit-text-stroke: 0px transparent; color: #fff; transform: translateY(0);}
         }
         .animate-hero-text {
             animation: strokeDash 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
         }
-        
-        @keyframes popUpFade {
-            0% { opacity: 0; transform: scale(0.95) translateY(20px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .animate-pop-up {
-            opacity: 0;
-            animation: popUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
 
-        /* --- マシンカード（シャープ＆ネオン発光） --- */
+        /* --- マシンカード（高級サイバー） --- */
         .machine-card {
             opacity: 0;
             transform: translateY(20px);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            border-radius: 4px; /* 角をシャープに */
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            background: #111114;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
         }
-        .machine-card.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .cyber-hover {
-            transition: all 0.3s ease;
-        }
-        .cyber-hover:hover {
-            transform: translateY(-4px);
-            z-index: 30;
-            /* box-shadowとborder-colorはJSでエリアカラーを動的付与 */
-        }
-        
-        /* 画像の馴染ませ */
-        .img-blend {
-            mix-blend-mode: multiply;
+        .machine-card.show { opacity: 1; transform: translateY(0); }
+
+        /* スポットライト・オーバーレイ */
+        .spotlight-overlay {
+            background: linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, transparent 40%);
+            pointer-events: none;
         }
 
-        /* --- HUD風タイトルボックス --- */
-        .hud-title-box {
-            position: relative;
-            padding: 0.5rem 2rem 0.5rem 1.5rem;
-            background: linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
-            border-left: 4px solid;
-            border-bottom: 1px solid;
-            /* 枠の色と影はJSで付与 */
+        /* 画像の馴染ませ */
+        .img-light-blend {
+            filter: contrast(1.05) brightness(0.95);
+            mix-blend-mode: screen; 
         }
-        .hud-title-box::after {
-            content: '';
+
+        /* HUD風サイドメニューボタン */
+        .menu-btn-active {
+            box-shadow: inset 0 0 15px rgba(240, 91, 130, 0.2);
+            border-right: 3px solid #f05b82;
+        }
+
+        /* ネオンバー（蛍光灯）エフェクト */
+        .neon-bar {
+            height: 2px;
+            width: 80%;
+            margin: 0 auto;
             position: absolute;
-            bottom: -1px;
-            right: 0;
-            width: 40px;
-            height: 1px;
-            background-color: currentColor;
-            box-shadow: 0 0 8px currentColor;
+            top: 0;
+            left: 10%;
+            z-index: 20;
+            border-radius: 0 0 4px 4px;
         }
     </style>
 </head>
-<body class="text-gray-900 bg-[#f4f4f8] bg-dot-pattern flex min-h-screen overflow-x-hidden">
+<body class="bg-fitdark flex min-h-screen overflow-x-hidden">
 
     <!-- メニューを開くボタン -->
-    <button id="open-sidebar-btn" class="fixed top-3 left-3 md:top-4 md:left-4 z-[60] bg-fitdark text-white p-2 md:p-3 rounded-sm shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-gray-700 hover:border-fitpink hover:shadow-[0_0_15px_rgba(240,91,130,0.5)] transition-all duration-300 hidden group">
-        <i data-lucide="menu" class="w-5 h-5 md:w-6 md:h-6 transform group-hover:scale-110 transition-transform"></i>
+    <button id="open-sidebar-btn" class="fixed top-4 left-4 z-[60] bg-white/10 backdrop-blur-md text-white p-3 rounded-sm border border-white/20 hover:border-fitpink transition-all duration-300 hidden group shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+        <i data-lucide="menu" class="w-6 h-6 transform group-hover:scale-110 transition-transform"></i>
     </button>
 
-    <!-- 左側：開閉可能なサイドメニュー -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 z-[70] overflow-y-auto no-scrollbar shadow-[10px_0_30px_rgba(0,0,0,0.05)] flex flex-col transition-transform duration-500 ease-in-out">
+    <!-- 左側：サイドメニュー -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-[#0c0c0f] border-r border-white/5 z-[70] overflow-y-auto no-scrollbar shadow-2xl flex flex-col transition-transform duration-500 ease-in-out">
         <!-- 閉じるボタン -->
-        <button id="close-sidebar-btn" class="absolute top-4 right-4 text-gray-400 hover:text-fitpink bg-gray-50 hover:bg-pink-50 rounded-sm p-1.5 transition-colors duration-300 border border-transparent hover:border-pink-200">
+        <button id="close-sidebar-btn" class="absolute top-4 right-4 text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-sm p-1.5 transition-colors duration-300">
             <i data-lucide="x" class="w-5 h-5"></i>
         </button>
 
-        <!-- 上部の細いピンクライン -->
-        <div class="h-1 bg-fitpink w-full flex-shrink-0 shadow-[0_0_10px_#f05b82]"></div>
+        <div class="h-1 bg-fitpink w-full flex-shrink-0 shadow-[0_0_15px_#f05b82]"></div>
         
-        <div class="pt-8 pb-4 flex items-center justify-center border-b border-gray-100 flex-shrink-0">
-            <span class="text-xs font-black text-gray-400 tracking-[0.3em] uppercase">Area Select</span>
+        <div class="pt-10 pb-6 flex items-center justify-center flex-shrink-0">
+            <span class="text-[10px] font-black text-white/30 tracking-[0.4em] uppercase">Machine Navigation</span>
         </div>
         
-        <!-- メニューボタン群 -->
-        <nav id="area-menu" class="flex flex-col flex-grow p-4 gap-2">
+        <nav id="area-menu" class="flex flex-col flex-grow p-4 gap-3">
             <!-- JSで生成 -->
         </nav>
     </aside>
@@ -156,43 +136,42 @@
     <!-- 右側：メインコンテンツ -->
     <main id="main-content" class="ml-64 flex-1 min-w-0 flex flex-col transition-all duration-500 ease-in-out relative z-10">
         
-        <!-- ファーストビュー (サイバー・ヒーローセクション) -->
-        <div class="relative w-full bg-fitdark py-12 md:py-24 px-4 flex flex-col items-center justify-center border-b-[4px] border-fitpink overflow-hidden shadow-2xl z-20">
-            <!-- デジタルグリッド背景 -->
-            <div class="absolute inset-0 bg-cyber-grid opacity-70"></div>
-            <!-- グラデーションのオーバーレイ -->
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0a0a0c_100%)]"></div>
+        <!-- ヒーローセクション -->
+        <div class="relative w-full bg-[#050507] py-16 md:py-28 px-4 flex flex-col items-center justify-center border-b border-white/5 overflow-hidden shadow-2xl z-20">
+            <div class="absolute inset-0 bg-cyber-grid opacity-30"></div>
             
-            <div class="relative z-30 animate-pop-up bg-transparent text-fitpink font-black px-6 py-1 text-[10px] md:text-sm tracking-[0.3em] border border-fitpink/50 mb-6 shadow-[0_0_15px_rgba(240,91,130,0.2)]">
-                <span class="inline-block uppercase drop-shadow-md">FIT365 Keio Horinouchi</span>
+            <div class="relative z-30 animate-pop-up mb-8">
+                <!-- 施設名を漢字表記に修正 -->
+                <span class="text-fitpink font-black text-[10px] md:text-sm tracking-[0.5em] uppercase border-b border-fitpink/50 pb-2">FIT365　京王堀之内</span>
             </div>
             
-            <h2 class="relative z-30 text-4xl sm:text-6xl md:text-7xl lg:text-[8rem] font-black leading-[0.9] tracking-tighter uppercase mb-6 text-center">
+            <h2 class="relative z-30 text-5xl sm:text-7xl lg:text-[9rem] font-black leading-[0.85] tracking-tighter uppercase mb-10 text-center">
                 <span class="block animate-hero-text">GRAND</span>
-                <span class="block animate-hero-text text-fitpink drop-shadow-[0_0_20px_rgba(240,91,130,0.5)]" style="animation-delay: 0.1s;">OPENING</span>
+                <span class="block animate-hero-text text-fitpink drop-shadow-[0_0_30px_rgba(240,91,130,0.6)]" style="animation-delay: 0.1s;">OPENING</span>
             </h2>
             
-            <div class="relative z-30 animate-pop-up flex items-center justify-center gap-4 mt-2" style="animation-delay: 0.4s;">
-                <div class="h-[1px] w-6 md:w-16 bg-gradient-to-r from-transparent to-white/50"></div>
-                <span class="text-white font-black text-xl md:text-3xl tracking-[0.2em] drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">4.1 WED</span>
-                <div class="h-[1px] w-6 md:w-16 bg-gradient-to-l from-transparent to-white/50"></div>
+            <div class="relative z-30 animate-pop-up flex items-center justify-center gap-6 mt-2" style="animation-delay: 0.4s;">
+                <div class="h-[1px] w-12 md:w-20 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+                <span class="text-white/90 font-black text-2xl md:text-4xl tracking-[0.3em]">4.1 WED</span>
+                <div class="h-[1px] w-12 md:w-20 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
             </div>
         </div>
 
-        <!-- マシン一覧エリア -->
-        <div class="px-3 md:px-8 lg:px-12 py-8 md:py-16 relative z-10">
+        <!-- マシン表示エリア -->
+        <div class="px-3 md:px-10 lg:px-16 py-12 md:py-20 relative z-10">
             
-            <!-- 選択中エリアのタイトル（HUD風・左揃え） -->
-            <div class="mb-8 md:mb-12 relative z-20 w-full px-1">
-                <div id="title-box" class="hud-title-box transition-all duration-500 inline-flex items-center">
-                    <h2 id="current-area-title" class="text-xl md:text-3xl lg:text-4xl font-black tracking-widest transition-colors duration-300 uppercase relative z-10">
+            <!-- エリアタイトル (HUDスタイル) -->
+            <div class="mb-12 md:mb-16 flex justify-center">
+                <div id="title-box" class="relative px-12 py-4 border-l-4 border-r-4 transition-all duration-500 flex flex-col items-center">
+                    <span id="title-label" class="text-[9px] font-black tracking-[0.4em] uppercase mb-2 opacity-50">Current Sector</span>
+                    <h2 id="current-area-title" class="text-3xl md:text-5xl lg:text-6xl font-black tracking-widest transition-colors duration-300 uppercase text-center">
                         <!-- JSで挿入 -->
                     </h2>
                 </div>
             </div>
             
-            <!-- 【修正箇所】スマホ時は2列、以降画面幅に合わせて列を増やす -->
-            <div id="machine-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-5 relative z-10">
+            <!-- マシングリッド (スマホ2列固定) -->
+            <div id="machine-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6 relative z-10">
                 <!-- JSで生成 -->
             </div>
         </div>
@@ -211,130 +190,94 @@
                 imgElement.src = `${baseName}${exts[currentIndex]}`; 
             } else {
                 imgElement.onerror = null;
-                imgElement.src = 'https://placehold.co/400x400/eeeeee/999999?text=NO+IMAGE&font=Noto+Sans+JP';
+                imgElement.src = 'https://placehold.co/400x400/1a1a1d/3a3a3c?text=COMING+SOON&font=Noto+Sans+JP';
             }
         };
 
-        // 各エリアにテーマカラー
         const gymData = [
-            {
-                id: 'cardio',
-                title: '有酸素エリア',
-                color: '#3b82f6', // ブルー
-                items: [
-                    { name: 'トレッドミル', count: '20', imgBase: 'treadmill' },
-                    { name: 'エリプティカルトレーナー', count: '4', imgBase: 'elliptical-trainer' },
-                    { name: 'ステアクライマー', count: '2', imgBase: 'stair-climber' },
-                    { name: 'リカンベントバイク', count: '2', imgBase: 'recumbent-bike' },
-                    { name: 'アップライトバイク', count: '2', imgBase: 'upright-bike' }
-                ]
-            },
-            {
-                id: 'resistance',
-                title: 'レジスタンスエリア',
-                color: '#f97316', // オレンジ
-                items: [
-                    { name: 'レッグエクステンション・カールコンボ', count: '1', imgBase: 'leg-extension-curl' },
-                    { name: 'レッグエクステンション', count: '1', imgBase: 'leg-extension' },
-                    { name: 'レッグカール', count: '1', imgBase: 'leg-curl' },
-                    { name: 'アブダクターアダクターコンボ', count: '1', imgBase: 'hip-abductor-adductor' },
-                    { name: 'レッグプレス', count: '2', imgBase: 'leg-press' },
-                    { name: 'プローンレッグカール', count: '1', imgBase: 'prone-leg-curl' },
-                    { name: 'アダクター', count: '1', imgBase: 'hip-abductor-adductor' },
-                    { name: 'アブダクター', count: '1', imgBase: 'hip-abductor' },
-                    { name: 'バイセプスカール', count: '2', imgBase: 'biceps-curl' },
-                    { name: 'アブドミナルクランチ', count: '2', imgBase: 'abdominal-crunch' },
-                    { name: 'ロータリートルソー', count: '1', imgBase: 'rotary-torso' },
-                    { name: 'ショルダープレス', count: '1', imgBase: 'shoulder-press' },
-                    { name: 'トライセプスエクステンション', count: '1', imgBase: 'triceps-press' },
-                    { name: 'ペックフライ＆リアコンボ', count: '2', imgBase: 'peck-fly-rear-combo' },
-                    { name: 'チェストプレス', count: '2', imgBase: 'chest-press' },
-                    { name: 'ラットプル＆シーテッドロー', count: '2', imgBase: 'lat-pull-seated-row-combo' },
-                    { name: 'ローロー', count: '2', imgBase: 'low-row' },
-                    { name: '8スタック', count: '1', imgBase: '8-stack' }
-                ]
-            },
-            {
-                id: 'freeweight',
-                title: 'フリーウエイトエリア',
-                color: '#ef4444', // レッド
-                items: [
-                    { name: 'パワーラック', count: '6', imgBase: 'power-rack' },
-                    { name: 'スミスマシン', count: '2', imgBase: 'smith-machine' },
-                    { name: 'スーパースミスマシン', count: '1', imgBase: 'super-smith' },
-                    { name: 'ONI コンボラック', count: '2', imgBase: 'oni-combo-rack' },
-                    { name: 'オリンピックベンチ', count: '1', imgBase: 'olympic-bench' },
-                    { name: 'PLワイドチェストプレス', count: '1', imgBase: 'pl-wide-chest-press' },
-                    { name: 'PLインクラインプレス', count: '1', imgBase: 'pl-incline-press' },
-                    { name: 'PLディクラインプレス', count: '1', imgBase: 'decline-press' },
-                    { name: 'PLチェスト＆バック', count: '1', imgBase: 'pl-chest-back' },
-                    { name: 'PLラテラルレイズ', count: '1', imgBase: 'pl-lateral-raise' },
-                    { name: 'PLアイソラテラルショルダープレス', count: '1', imgBase: 'pl-shoulder-press' },
-                    { name: 'PLワイドプルダウン', count: '1', imgBase: 'pl-wide-pulldown' },
-                    { name: 'PLアイソラテラルハイロー', count: '1', imgBase: 'pl-high-row' },
-                    { name: 'PLアイソラテラルDYロー', count: '1', imgBase: 'pl-dy-row' },
-                    { name: 'PLアイソラテラルロー', count: '1', imgBase: 'iso-row' },
-                    { name: '45度レッグプレス', count: '1', imgBase: '45-leg-press' },
-                    { name: 'ハックスクワット', count: '1', imgBase: 'hack-squat' },
-                    { name: 'PLシーテッドカーフレイズ', count: '1', imgBase: 'pl-calf-raise' },
-                    { name: 'アシストチン', count: '1', imgBase: 'assist-chin' },
-                    { name: 'プリチャーカール', count: '1', imgBase: 'preacher-bench' },
-                    { name: 'ケーブルマシン', count: '3', imgBase: 'cable-machine' },
-                    { name: 'ダンベル', count: '50KG迄', imgBase: '' }, 
-                    { name: 'プラットフォーム', count: '3', imgBase: '' },
-                    { name: 'アジャスタブルベンチ', count: '10', imgBase: '' }
-                ]
-            },
-            {
-                id: 'ladies',
-                title: 'レディースエリア',
-                color: '#f05b82', // FITピンク
-                items: [
-                    { name: 'トレッドミル', count: '4', imgBase: 'l-treadmill' },
-                    { name: 'エリプティカルトレーナー', count: '1', imgBase: 'l-elliptical' },
-                    { name: 'ステアクライマー', count: '1', imgBase: 'l-stair-climber' },
-                    { name: 'アップライトバイク', count: '2', imgBase: 'l-upright-bike' },
-                    { name: 'レッグプレス', count: '1', imgBase: 'l-leg-press' },
-                    { name: 'グルート', count: '1', imgBase: 'l-glute' },
-                    { name: 'レッグエクステンション/カール', count: '1', imgBase: 'l-leg-extension-curl-combo' },
-                    { name: 'ヒップアブダクター/アダクター', count: '1', imgBase: 'l-hip-abductor-adductor' },
-                    { name: 'アブ/ローバック', count: '1', imgBase: 'l-ab-low-back' },
-                    { name: 'チェストプレス', count: '1', imgBase: 'l-chest-press' },
-                    { name: 'ラットプル＆シーテッドロー', count: '1', imgBase: 'l-lat-pull-seated-row-combo' },
-                    { name: 'スミスマシン', count: '1', imgBase: 'l-smith-machine' }
-                ]
-            },
-            {
-                id: 'functional',
-                title: 'ファンクショナル',
-                color: '#eab308', // イエロー
-                items: [
-                    { name: '腹筋台', count: '1', imgBase: '' },
-                    { name: '背筋台', count: '1', imgBase: '' },
-                    { name: 'ラダー', count: '1', imgBase: 'ladder' },
-                    { name: 'プライオBOX', count: '2', imgBase: 'plyo' },
-                    { name: 'ケトルベル', count: '式', imgBase: 'kettlebell' }, 
-                    { name: 'タンク', count: '1', imgBase: 'tank' },
-                    { name: 'ファンクショナルラック', count: '1', imgBase: 'functional-rack' },
-                    { name: 'YURAGI チェスト', count: '1', imgBase: 'yuragi-chest' },
-                    { name: 'YURAGI 2in1', count: '1', imgBase: 'yuragi-2in1' },
-                    { name: 'YURAGI アダクター', count: '1', imgBase: 'yuragi-adductor' },
-                    { name: 'ケーブル', count: '1', imgBase: 'cable' }
-                ]
-            },
-            {
-                id: 'premium',
-                title: 'プレミアムルーム',
-                color: '#a855f7', // パープル
-                items: [
-                    { name: 'タンニングマシン', count: '1', imgBase: 'tanning' },
-                    { name: '脱毛マシン', count: '1', imgBase: 'hair-removal' },
-                    { name: 'プロテインサーバー', count: '1', imgBase: 'wellness-server' },
-                    { name: 'マッサージチェア', count: '4', imgBase: 'massage-chair' },
-                    { name: '温熱機器ハーフドーム', count: '2', imgBase: 'half-dome-2' },
-                    { name: 'コワーキングスペース', count: '式', imgBase: 'coworking-space' }
-                ]
-            }
+            { id: 'cardio', title: '有酸素エリア', color: '#3b82f6', items: [
+                { name: 'トレッドミル', count: '20', imgBase: 'treadmill' },
+                { name: 'エリプティカルトレーナー', count: '4', imgBase: 'elliptical-trainer' },
+                { name: 'ステアクライマー', count: '2', imgBase: 'stair-climber' },
+                { name: 'リカンベントバイク', count: '2', imgBase: 'recumbent-bike' },
+                { name: 'アップライトバイク', count: '2', imgBase: 'upright-bike' }
+            ]},
+            { id: 'resistance', title: 'レジスタンスエリア', color: '#f97316', items: [
+                { name: 'レッグエクステンション・カールコンボ', count: '1', imgBase: 'leg-extension-curl' },
+                { name: 'レッグエクステンション', count: '1', imgBase: 'leg-extension' },
+                { name: 'レッグカール', count: '1', imgBase: 'leg-curl' },
+                { name: 'アブダクターアダクターコンボ', count: '1', imgBase: 'hip-abductor-adductor' },
+                { name: 'レッグプレス', count: '2', imgBase: 'leg-press' },
+                { name: 'プローンレッグカール', count: '1', imgBase: 'prone-leg-curl' },
+                { name: 'アダクター', count: '1', imgBase: 'hip-abductor-adductor' },
+                { name: 'アブダクター', count: '1', imgBase: 'hip-abductor' },
+                { name: 'バイセプスカール', count: '2', imgBase: 'biceps-curl' },
+                { name: 'アブドミナルクランチ', count: '2', imgBase: 'abdominal-crunch' },
+                { name: 'ロータリートルソー', count: '1', imgBase: 'rotary-torso' },
+                { name: 'ショルダープレス', count: '1', imgBase: 'shoulder-press' },
+                { name: 'トライセプスエクステンション', count: '1', imgBase: 'triceps-press' },
+                { name: 'ペックフライ＆リアコンボ', count: '2', imgBase: 'peck-fly-rear-combo' },
+                { name: 'チェストプレス', count: '2', imgBase: 'chest-press' },
+                { name: 'ラットプル＆シーテッドロー', count: '2', imgBase: 'lat-pull-seated-row-combo' },
+                { name: 'ローロー', count: '2', imgBase: 'low-row' },
+                { name: '8スタック', count: '1', imgBase: '8-stack' }
+            ]},
+            { id: 'freeweight', title: 'フリーウエイトエリア', color: '#ef4444', items: [
+                { name: 'パワーラック', count: '6', imgBase: 'power-rack' },
+                { name: 'スミスマシン', count: '2', imgBase: 'smith-machine' },
+                { name: 'スーパースミスマシン', count: '1', imgBase: 'super-smith' },
+                { name: 'ONI コンボラック', count: '2', imgBase: 'oni-combo-rack' },
+                { name: 'オリンピックベンチ', count: '1', imgBase: 'olympic-bench' },
+                { name: 'PLワイドチェストプレス', count: '1', imgBase: 'pl-wide-chest-press' },
+                { name: 'PLインクラインプレス', count: '1', imgBase: 'pl-incline-press' },
+                { name: 'PLディクラインプレス', count: '1', imgBase: 'decline-press' },
+                { name: 'PLチェスト＆バック', count: '1', imgBase: 'pl-chest-back' },
+                { name: 'PLラテラルレイズ', count: '1', imgBase: 'pl-lateral-raise' },
+                { name: 'PLアイソラテラルショルダープレス', count: '1', imgBase: 'pl-shoulder-press' },
+                { name: 'PLワイドプルダウン', count: '1', imgBase: 'pl-wide-pulldown' },
+                { name: 'PLアイソラテラルハイロー', count: '1', imgBase: 'pl-high-row' },
+                { name: 'PLアイソラテラルDYロー', count: '1', imgBase: 'pl-dy-row' },
+                { name: 'PLアイソラテラルロー', count: '1', imgBase: 'iso-row' },
+                { name: '45度レッグプレス', count: '1', imgBase: '45-leg-press' },
+                { name: 'ハックスクワット', count: '1', imgBase: 'hack-squat' },
+                { name: 'PLシーテッドカーフレイズ', count: '1', imgBase: 'pl-calf-raise' },
+                { name: 'アシストチン', count: '1', imgBase: 'assist-chin' },
+                { name: 'プリチャーカール', count: '1', imgBase: 'preacher-bench' },
+                { name: 'ケーブルマシン', count: '3', imgBase: 'cable-machine' }
+            ]},
+            { id: 'ladies', title: 'レディースエリア', color: '#f05b82', items: [
+                { name: 'トレッドミル', count: '4', imgBase: 'l-treadmill' },
+                { name: 'エリプティカルトレーナー', count: '1', imgBase: 'l-elliptical' },
+                { name: 'ステアクライマー', count: '1', imgBase: 'l-stair-climber' },
+                { name: 'アップライトバイク', count: '2', imgBase: 'l-upright-bike' },
+                { name: 'レッグプレス', count: '1', imgBase: 'l-leg-press' },
+                { name: 'グルート', count: '1', imgBase: 'l-glute' },
+                { name: 'レッグエクステンション/カール', count: '1', imgBase: 'l-leg-extension-curl-combo' },
+                { name: 'ヒップアブダクター/アダクター', count: '1', imgBase: 'l-hip-abductor-adductor' },
+                { name: 'アブ/ローバック', count: '1', imgBase: 'l-ab-low-back' },
+                { name: 'チェストプレス', count: '1', imgBase: 'l-chest-press' },
+                { name: 'ラットプル＆シーテッドロー', count: '1', imgBase: 'l-lat-pull-seated-row-combo' },
+                { name: 'スミスマシン', count: '1', imgBase: 'l-smith-machine' }
+            ]},
+            { id: 'functional', title: 'ファンクショナル', color: '#eab308', items: [
+                { name: 'ラダー', count: '1', imgBase: 'ladder' },
+                { name: 'プライオBOX', count: '2', imgBase: 'plyo' },
+                { name: 'ケトルベル', count: '式', imgBase: 'kettlebell' }, 
+                { name: 'タンク', count: '1', imgBase: 'tank' },
+                { name: 'ファンクショナルラック', count: '1', imgBase: 'functional-rack' },
+                { name: 'YURAGI チェスト', count: '1', imgBase: 'yuragi-chest' },
+                { name: 'YURAGI 2in1', count: '1', imgBase: 'yuragi-2in1' },
+                { name: 'YURAGI アダクター', count: '1', imgBase: 'yuragi-adductor' },
+                { name: 'ケーブル', count: '1', imgBase: 'cable' }
+            ]},
+            { id: 'premium', title: 'プレミアムルーム', color: '#a855f7', items: [
+                { name: 'タンニングマシン', count: '1', imgBase: 'tanning' },
+                { name: '脱毛マシン', count: '1', imgBase: 'hair-removal' },
+                { name: 'プロテインサーバー', count: '1', imgBase: 'wellness-server' },
+                { name: 'マッサージチェア', count: '4', imgBase: 'massage-chair' },
+                { name: '温熱機器ハーフドーム', count: '2', imgBase: 'half-dome-2' },
+                { name: 'コワーキングスペース', count: '式', imgBase: 'coworking-space' }
+            ]}
         ];
 
         const menuContainer = document.getElementById('area-menu');
@@ -342,7 +285,6 @@
         const titleContainer = document.getElementById('current-area-title');
         const titleBox = document.getElementById('title-box');
         
-        // サイドバー制御
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('main-content');
         const openBtn = document.getElementById('open-sidebar-btn');
@@ -369,150 +311,106 @@
         openBtn.addEventListener('click', () => toggleSidebar(true));
         closeBtn.addEventListener('click', () => toggleSidebar(false));
 
-        if (window.innerWidth < 768) {
-            toggleSidebar(false);
-        }
+        if (window.innerWidth < 768) toggleSidebar(false);
 
         function buildMenu() {
             gymData.forEach((area, index) => {
                 const btn = document.createElement('button');
-                // シャープなメニューボタンデザイン
-                btn.className = `w-full block focus:outline-none mb-2 transition-all duration-300 relative group bg-white border border-gray-200 rounded-sm`;
+                btn.className = `w-full block focus:outline-none mb-2 transition-all duration-300 relative group py-4 px-6 border-l-2 border-white/5 text-left`;
                 
                 btn.innerHTML = `
-                    <div class="menu-indicator absolute left-0 top-0 bottom-0 w-1 transition-all duration-300" style="background-color: ${area.color}; opacity: 0.3;"></div>
-                    <div class="menu-bg absolute inset-0 transition-opacity duration-300 opacity-0 group-hover:opacity-10" style="background-color: ${area.color};"></div>
-                    
-                    <div class="menu-btn-content relative z-10 px-4 py-3 flex items-center justify-between transition-colors duration-300">
-                        <span class="text-xs md:text-sm font-black tracking-widest uppercase transition-colors duration-300 text-gray-500">${area.title}</span>
-                        <i data-lucide="chevron-right" class="menu-icon w-4 h-4 opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2 group-hover:translate-x-0" style="color: ${area.color};"></i>
+                    <div class="relative z-10 flex items-center justify-between">
+                        <span class="text-xs font-black tracking-[0.2em] uppercase transition-colors duration-300 text-white/40 group-hover:text-white">${area.title}</span>
                     </div>
                 `;
                 
                 btn.onclick = () => selectArea(area.id, btn, area.color);
                 menuContainer.appendChild(btn);
 
-                if (index === 0) {
-                    selectArea(area.id, btn, area.color);
-                }
+                if (index === 0) selectArea(area.id, btn, area.color);
             });
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         function selectArea(id, selectedBtn, color) {
             if (currentActiveId === id) return;
             currentActiveId = id;
 
-            // メニューのアクティブ状態の切り替え（サイバーな点灯）
             const allBtns = menuContainer.querySelectorAll('button');
             allBtns.forEach(btn => {
-                const indicator = btn.querySelector('.menu-indicator');
-                const bg = btn.querySelector('.menu-bg');
                 const span = btn.querySelector('span');
-                const icon = btn.querySelector('.menu-icon');
-
                 if (btn === selectedBtn) {
-                    indicator.style.opacity = '1';
-                    indicator.style.width = '4px';
-                    bg.style.opacity = '0.1';
+                    btn.style.borderLeftColor = color;
+                    btn.classList.add('menu-btn-active');
                     span.style.color = color;
-                    icon.style.opacity = '1';
-                    icon.style.transform = 'translateX(0)';
-                    btn.style.borderColor = color;
-                    btn.classList.add('shadow-[0_2px_8px_rgba(0,0,0,0.05)]');
                 } else {
-                    indicator.style.opacity = '0.3';
-                    indicator.style.width = '2px';
-                    bg.style.opacity = '0';
-                    span.style.color = '#6b7280'; // gray-500
-                    icon.style.opacity = '0';
-                    icon.style.transform = 'translateX(-8px)';
-                    btn.style.borderColor = '#e5e7eb'; // gray-200
-                    btn.classList.remove('shadow-[0_2px_8px_rgba(0,0,0,0.05)]');
+                    btn.style.borderLeftColor = 'transparent';
+                    btn.classList.remove('menu-btn-active');
+                    span.style.color = '';
                 }
             });
 
             const areaData = gymData.find(a => a.id === id);
             
-            // HUD風タイトルの色と影の切り替え
             titleContainer.style.opacity = '0';
-            titleContainer.style.transform = 'translateY(-10px)';
-            
             setTimeout(() => {
                 titleContainer.innerHTML = areaData.title;
-                titleContainer.style.color = areaData.color;
-                
-                titleBox.style.borderLeftColor = areaData.color;
-                titleBox.style.borderBottomColor = areaData.color;
-                titleBox.style.color = areaData.color; // ::afterの影用
-                // 内側に淡く光るグラデーション
-                titleBox.style.boxShadow = `inset 0 -15px 15px -15px ${areaData.color}30`;
-                
+                titleContainer.style.color = color;
+                titleBox.style.borderColor = `${color}40`;
+                titleBox.style.boxShadow = `0 0 20px ${color}15`;
                 titleContainer.style.opacity = '1';
-                titleContainer.style.transform = 'translateY(0)';
             }, 200);
 
             gridContainer.innerHTML = '';
 
-            // マシンカードの生成 (スマホ時は2列を想定したサイズ調整)
             areaData.items.forEach((item, index) => {
                 const card = document.createElement('div');
-                card.className = `machine-card cyber-hover bg-white p-2 md:p-3 flex flex-col group cursor-default border border-gray-200`;
-
-                // JSから動的にホバー時のネオン効果を付与
-                card.onmouseenter = () => { 
-                    card.style.borderColor = areaData.color; 
-                    card.style.boxShadow = `0 0 15px ${areaData.color}40, 0 4px 6px -1px rgba(0,0,0,0.1)`; 
-                };
-                card.onmouseleave = () => { 
-                    card.style.borderColor = '#e5e7eb'; 
-                    card.style.boxShadow = 'none'; 
-                };
+                card.className = `machine-card shadow-lg`;
 
                 const countText = item.count.includes('迄') || item.count === '式' ? item.count : `${item.count} 台`;
 
                 let imgHTML = '';
                 if (item.imgBase) {
-                    imgHTML = `<img src="${item.imgBase}.jpg" alt="${item.name}" data-basename="${item.imgBase}" data-ext-index="0" onerror="handleImageError(this)" class="w-full h-full object-contain p-1.5 md:p-2 img-blend group-hover:scale-110 transition-transform duration-500 ease-out">`;
+                    imgHTML = `<img src="${item.imgBase}.jpg" alt="${item.name}" data-basename="${item.imgBase}" data-ext-index="0" onerror="handleImageError(this)" class="w-full h-full object-contain p-2 img-light-blend group-hover:scale-110 transition-transform duration-700 ease-out relative z-10">`;
                 } else {
-                    imgHTML = `<img src="https://placehold.co/400x400/f0f0f0/cccccc?text=NO+IMAGE&font=Noto+Sans+JP" alt="${item.name}" class="w-full h-full object-contain p-1.5 md:p-2 mix-blend-darken group-hover:scale-105 transition-transform duration-500 ease-out">`;
+                    imgHTML = `<img src="https://placehold.co/400x400/1a1a1d/3a3a3c?text=COMING+SOON&font=Noto+Sans+JP" alt="${item.name}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out z-10">`;
                 }
 
                 card.innerHTML = `
-                    <div class="relative aspect-square mb-2 md:mb-3 overflow-hidden flex items-center justify-center bg-[#f8f9fa] border border-gray-100 rounded-sm">
-                        <!-- モニターの走査線（スキャンライン）エフェクト -->
-                        <div class="absolute inset-0 scanlines z-10 pointer-events-none"></div>
+                    <div class="neon-bar animate-neon" style="background-color: ${color}; box-shadow: 0 0 10px ${color};"></div>
+                    
+                    <div class="relative aspect-square flex items-center justify-center bg-[#0a0a0c]">
+                        <div class="absolute inset-0 spotlight-overlay z-0" style="background: linear-gradient(to bottom, ${color}20 0%, transparent 50%);"></div>
                         
-                        <div class="relative z-0 w-full h-full flex items-center justify-center p-1 md:p-2">
-                            ${imgHTML}
-                        </div>
+                        ${imgHTML}
                         
-                        <!-- サイバー風の斜めバッジ -->
-                        <div class="absolute top-1 right-1 md:top-2 md:right-2 z-20">
-                            <div class="text-white text-[9px] md:text-xs font-black px-1.5 md:px-2 py-0.5 transform -skew-x-12" style="background-color: ${areaData.color}; box-shadow: 0 0 5px ${areaData.color}80;">
-                                <span class="inline-block transform skew-x-12 tracking-wider">${countText}</span>
+                        <div class="absolute top-2 right-2 z-20">
+                            <div class="text-white text-[9px] font-black px-2 py-0.5" style="background-color: ${color}; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);">
+                                <span class="tracking-wider">${countText}</span>
                             </div>
                         </div>
                     </div>
-                    <!-- テキストサイズを小さく調整し、2列でも収まるように -->
-                    <div class="flex-grow flex items-center justify-center z-10 px-1">
-                        <h4 class="font-black text-gray-800 text-[10px] md:text-sm tracking-tight leading-tight text-center transition-colors duration-300" style="group-hover:color: ${areaData.color};">${item.name}</h4>
+                    
+                    <div class="p-3 bg-[#111114] border-t border-white/5">
+                        <h4 class="font-black text-white/90 text-[10px] md:text-xs tracking-widest text-center uppercase leading-tight group-hover:text-white transition-colors duration-300">${item.name}</h4>
                     </div>
                 `;
-                gridContainer.appendChild(card);
 
-                // 時間差出現
-                setTimeout(() => {
-                    card.classList.add('show');
-                }, 40 * index);
+                card.onmouseenter = () => {
+                    card.style.boxShadow = `0 0 25px ${color}20`;
+                    card.style.transform = 'translateY(-4px)';
+                };
+                card.onmouseleave = () => {
+                    card.style.boxShadow = 'none';
+                    card.style.transform = 'translateY(0)';
+                };
+
+                gridContainer.appendChild(card);
+                setTimeout(() => card.classList.add('show'), 30 * index);
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            buildMenu();
-        });
+        document.addEventListener('DOMContentLoaded', buildMenu);
     </script>
 </body>
 </html>
