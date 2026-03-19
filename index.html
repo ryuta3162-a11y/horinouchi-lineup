@@ -110,7 +110,9 @@
         /* --- ベース背景のストーン調（石材）テクスチャとスポットライト --- */
         .base-stone-bg {
             background-color: #27272a; /* 濃いダークグレー */
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
+            /* 重さの原因だったSVGノイズを削除し、軽量なドットパターンで高級感を維持 */
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
             position: relative;
         }
         .base-spotlight {
@@ -145,6 +147,10 @@
         .img-blend {
             /* カード内の薄いグレー背景に白背景画像を馴染ませる */
             mix-blend-mode: multiply; 
+            /* 画質劣化防止とパフォーマンス向上のためのハードウェアアクセラレーション */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            -webkit-font-smoothing: subpixel-antialiased;
         }
 
         /* HUD風サイドメニューボタン */
@@ -225,8 +231,8 @@
                     <p class="text-gray-400 text-[10px] md:text-xs tracking-wider z-20 drop-shadow-md">※画像はサンプルです。実際の導入マシンとは異なる場合があります。</p>
                 </div>
                 
-                <!-- マシングリッド (カードを最前面に浮き上がらせる) -->
-                <div id="machine-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 relative z-30">
+                <!-- マシングリッド (PC表示時のサイズを保つため列数を細かく設定) -->
+                <div id="machine-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-6 relative z-30">
                     <!-- JSで生成 -->
                 </div>
             </div>
@@ -434,6 +440,9 @@
             }, 200);
 
             gridContainer.innerHTML = '';
+            
+            // パフォーマンス向上のため DocumentFragment を使用
+            const fragment = document.createDocumentFragment();
 
             areaData.items.forEach((item, idx) => {
                 const card = document.createElement('div');
@@ -471,9 +480,11 @@
                     </div>
                 `;
 
-                gridContainer.appendChild(card);
+                fragment.appendChild(card);
                 setTimeout(() => card.classList.add('show'), 30 * idx);
             });
+            
+            gridContainer.appendChild(fragment);
         }
 
         document.addEventListener('DOMContentLoaded', buildMenu);
